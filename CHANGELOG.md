@@ -2,6 +2,12 @@
 
 All notable changes to Claudia will be documented in this file.
 
+## Unreleased
+
+### Fixed
+
+- **Memory daemon: WAL checkpoint no longer blocks concurrent readers** (#66, thanks @tilthnco). `database.py` now uses `PRAGMA wal_checkpoint(PASSIVE)` on every connection instead of `TRUNCATE`. `TRUNCATE` takes an exclusive lock, which deadlocks against concurrent WAL readers like Litestream and causes the MCP server to time out after 30s on startup. `PASSIVE` yields cleanly if a reader holds the WAL lock. Compaction behavior is unchanged; only the locking mode is relaxed. Crash safety is unaffected since WAL mode (not checkpointing) is the durability mechanism.
+
 ## 1.60.0 (2026-05-15)
 
 ### Three new skills inspired by Karpathy's recent work, adapted to Claudia's principles
