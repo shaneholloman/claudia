@@ -116,7 +116,10 @@ class Database:
             conn.execute("PRAGMA synchronous = NORMAL")
             conn.execute("PRAGMA foreign_keys = ON")
             # Recover any uncommitted WAL writes from a previous crashed daemon
-            conn.execute("PRAGMA wal_checkpoint(TRUNCATE)")
+            # Use PASSIVE (not TRUNCATE) so concurrent readers (e.g. Litestream)
+            # don't cause a 30-second timeout. TRUNCATE blocks all readers;
+            # PASSIVE yields cleanly if a reader holds the WAL lock.
+            conn.execute("PRAGMA wal_checkpoint(PASSIVE)")
 
             # Load sqlite-vec for vector search
             if not load_sqlite_vec(conn):
