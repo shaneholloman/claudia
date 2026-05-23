@@ -1,6 +1,6 @@
 {
-  "version": "1.60.0",
-  "generated": "2026-05-23T01:11:39.439Z",
+  "version": "1.61.1",
+  "generated": "2026-05-23T14:34:46.165Z",
   "algorithm": "sha256",
   "files": {
     ".claude/rules/claudia-principles.md": "939e9720421628e7f2e4c8dfbaa4aeb9c1e18e8c6a5379cd6b772a6835b812e5",
@@ -26,7 +26,6 @@
     ".claude/skills/capture-meeting/SKILL.md": "815e7587fcd925323c379a6c57e458b3484d034338c1237378641d142c126175",
     ".claude/skills/capture-meeting/evals/basic.yaml": "47c4eb1479aeda8067bc877cebfe8688c9b2bb3ce09297e42375cdf558f412e3",
     ".claude/skills/client-health/SKILL.md": "fed639e6f2c4433cab6a6b4b59776985492dda16be3bd1e843c3e94175936655",
-    ".claude/skills/close-the-loop/SKILL.md": "835af2b0bde5583d1dffa07f261a1ec50e87f99eb39694c00cb7965ccce21942",
     ".claude/skills/commitment-detector.md": "66f9e919349d1880eb12636cec6f583be1b3fbe3b28f6180ec732d3c284af3b6",
     ".claude/skills/connector-discovery.md": "a6659f6ed8a182f968cdc9b4a342de9015d5579859310b77ff230ce73397cdc5",
     ".claude/skills/databases/SKILL.md": "b2ce4ae30aafa2487dabd7befd067976f0092fcef31dea7601e1683ceca0ef50",
@@ -46,7 +45,6 @@
     ".claude/skills/ingest-sources/SKILL.md": "938b93d299649db156ad19e9a7bd5d09e950f53bc2eaf8a85386f9fdbca350d0",
     ".claude/skills/ingest-sources/references/extraction-patterns.md": "28d6dc604c4a11eacfe4523e705ad430ba8fe26632bafcccaef656e9618e5aea",
     ".claude/skills/judgment-awareness.md": "0077129a87f91d295515108f3f9a68ca6874c6e38fc7f2a73a462704fa00ba2d",
-    ".claude/skills/manuscript-fact-check/SKILL.md": "3dbdeea105740e42b1ff9d5e7245dd37418401b36655169b5a5ab2a4a8d6a383",
     ".claude/skills/map-connections/SKILL.md": "e8133d5e3de36e32e3858a1ee3918a577855e77ade022933097f87a0100cc9a3",
     ".claude/skills/meditate/SKILL.md": "1d814f0c52f4309708669139ba4b637bf05a228e2381950ee3851c6145e25cc7",
     ".claude/skills/meditate/evals/basic.yaml": "daba441b2fd9d1d4afddcff6eaa9673884198b1d0f85d9d06edbe0738012291a",
@@ -78,6 +76,6 @@
     ".claude/skills/wiki/SKILL.md": "e45e8db6fce1d774e36c93be27e5d9153b3ae474c48db478a4d7ff2b138e42e8",
     ".claude/skills/wiki/references/citations-and-contradictions.md": "1b16301020fdb5e4840035ca22425ebb03202694e88eb494105ff39e22e03263",
     ".claude/skills/wiki/references/page-template.md": "b19382ee9366b1e7f8c9f230881ac3c45982b59ffee0d82fe64b103862ba4745",
-    "CLAUDE.md": "736c5d95f1477ea6ef1c00d3006eeb4b369eb2bd5f3a926e4d78c42f857fa881"
+    "CLAUDE.md": "b8244c281afd5cf46544f1f68b4130672d9f6e6bcbcbae7defca3a31c09d4c12"
   }
 }
