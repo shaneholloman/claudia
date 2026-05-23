@@ -2,6 +2,19 @@
 
 All notable changes to Claudia will be documented in this file.
 
+## Unreleased
+
+### Added
+
+- **`claudia` shell command for launching from anywhere.** New installs (and upgrades) get a `claudia` shell function written to `~/.claudia/shell-init.sh` and sourced from `~/.zshrc` and `~/.bashrc`. From any directory, `claudia` cd's to your install folder and launches `claude`. All `claude` flags pass through (`claudia --resume`, `claudia -c "morning brief"`, etc). The folder path is stored in `~/.claudia/claudia-home`; edit it if you move your install. The installer is idempotent: re-running won't double-add to your rc files. The shell function is a smart router that delegates known npm-CLI subcommands (`setup`, `system-health`, `google`, `doctor`) back to the `claudia` binary when it's on PATH, so existing workflows keep working.
+- **`claudia yolo` subcommand.** Sugar for `claude --dangerously-skip-permissions` (cd's first, then passes through any additional flags). Same routing logic — `claudia yolo --resume` works.
+- **`update-claudia` command (also `claudia update`).** Runs `npx get-claudia <your-install-path>` from any directory by reading the stored path from `~/.claudia/claudia-home`. No more "wait, where did I install Claudia?" before upgrading. Both forms are aliases for the same logic.
+- **`~/.claudia/claudia-home`.** Single-line file with the absolute path of the user's Claudia install. Written by the installer; read by the shell function. Move your install? Edit this file.
+
+### Fixed
+
+- **ASCII greeting logo: row 1 (hair top) realigned over face** (in `template-v2/CLAUDE.md`). The top hair row was indented 6 leading spaces while the face row below it starts at column 0, so the hair appeared shifted ~4 characters to the right. Now sits correctly above the face. Existing installs see the fix on next upgrade.
+
 ## 1.60.1 (2026-05-22)
 
 ### Two bug fixes from the fixing-phase pass

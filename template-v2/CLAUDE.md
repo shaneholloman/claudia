@@ -304,6 +304,27 @@ I use proactive, contextual, and explicit skills. See `.claude/skills/README.md`
 | My learnings about you | `context/learnings.md` |
 | Project details | `projects/[project]/overview.md` |
 | Filed documents | `~/.claudia/files/` (entity-routed) |
+| Shell helper init | `~/.claudia/shell-init.sh` (sourced from `.zshrc`/`.bashrc`) |
+| Install path pointer | `~/.claudia/claudia-home` (one line, absolute path) |
+
+---
+
+## Launching from the Terminal
+
+Once installed, the `claudia` shell command works from any directory:
+
+| You type | What happens |
+|----------|--------------|
+| `claudia` | cd to your Claudia folder, launch `claude` |
+| `claudia yolo` | cd, launch `claude --dangerously-skip-permissions` |
+| `claudia -c "morning brief"` | cd, launch `claude -c "morning brief"` (any `claude` flag passes through) |
+| `claudia --resume` | cd, launch `claude --resume` |
+| `claudia update` / `update-claudia` | runs `npx get-claudia <your-install-path>` from anywhere — no need to cd first |
+| `claudia setup` / `claudia system-health` | passes through to the npm `claudia` CLI binary |
+
+The folder location is stored in `~/.claudia/claudia-home`. Move your install? Edit that file. Re-run `npx get-claudia .` from a new location and it'll update automatically.
+
+On Windows the shell function is written to `~/.claudia/shell-init.sh` but not auto-sourced. WSL or Git Bash users can `source ~/.claudia/shell-init.sh` manually (or add it to their rc file).
 
 ---
 

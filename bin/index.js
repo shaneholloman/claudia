@@ -14,6 +14,7 @@ import {
   resolveBakPath,
   applyResolution,
 } from './manifest-lib.js';
+import { writeShellInit, appendShellRC } from './shell-init.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -284,6 +285,7 @@ const STEPS = [
   { id: 'memory',      label: 'Memory System' },
   { id: 'daemon',      label: 'Memory Daemon' },
   { id: 'mcp',         label: 'MCP Config' },
+  { id: 'shell',       label: 'Shell Helper' },
   { id: 'vault',       label: 'Obsidian Vault' },
   { id: 'health',      label: 'Health Check' },
 ];
@@ -1517,12 +1519,34 @@ async function main() {
 
   renderer.stopSpinner();
 
-  // Vault step, then completion
-  runVaultStep(renderer, () => {
-    renderer.render();
-    showDbScanResults(dbScan);
-    showCompletion(targetDir, isCurrentDir, memoryOk, rootCause, isUpgrade);
+  // Shell helper step, then vault, then completion
+  runShellStep(renderer, targetDir, () => {
+    runVaultStep(renderer, () => {
+      renderer.render();
+      showDbScanResults(dbScan);
+      showCompletion(targetDir, isCurrentDir, memoryOk, rootCause, isUpgrade);
+    });
   });
+
+  // ── Shell helper step ──
+
+  function runShellStep(renderer, targetPath, callback) {
+    renderer.update('shell', 'active', 'installing claudia command...');
+    try {
+      writeShellInit(homedir(), targetPath);
+      const rc = appendShellRC(homedir());
+      if (rc.skipped) {
+        renderer.update('shell', 'done', 'files written (Windows: source manually)');
+      } else if (rc.added.length > 0) {
+        renderer.update('shell', 'done', `added to ${rc.added.length} rc file(s)`);
+      } else {
+        renderer.update('shell', 'done', 'already installed');
+      }
+    } catch (err) {
+      renderer.update('shell', 'warn', `${err.message}`);
+    }
+    callback();
+  }
 
   // ── Vault step ──
 
@@ -1651,6 +1675,7 @@ async function main() {
         console.log('');
         console.log(`   ${colors.cyan}${launchCmd}${colors.reset}`);
         console.log('');
+        console.log(` ${colors.dim}Tip: open a new terminal and just type ${colors.reset}${colors.cyan}claudia${colors.reset}${colors.dim} from anywhere.${colors.reset}`);
         console.log(` ${colors.dim}What's new: /morning-brief · /inbox-check · /feedback${colors.reset}`);
       } else {
         // Fresh install: build anticipation for the onboarding
@@ -1661,6 +1686,7 @@ async function main() {
         }
         console.log(`   ${colors.cyan}claude${colors.reset}`);
         console.log('');
+        console.log(` ${colors.dim}Or open a new terminal and type ${colors.reset}${colors.cyan}claudia${colors.reset}${colors.dim} from anywhere.${colors.reset}`);
         console.log(` ${colors.dim}She'll introduce herself and learn how you work.${colors.reset}`);
         console.log(` ${colors.dim}Try: ${colors.reset}${colors.cyan}"Say hi"${colors.reset} ${colors.dim}·${colors.reset} ${colors.cyan}/morning-brief${colors.reset} ${colors.dim}·${colors.reset} ${colors.cyan}"Who do I know?"${colors.reset}`);
       }
