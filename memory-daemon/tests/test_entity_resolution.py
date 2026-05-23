@@ -391,3 +391,94 @@ class TestLatencyBudget:
         assert elapsed_ms < 50.0, (
             f"remember_fact with 3 entities took {elapsed_ms:.2f}ms (>50ms budget)"
         )
+
+
+# ---------------------------------------------------------------------------
+# 6. end_session() entity import must use smart type inference
+# ---------------------------------------------------------------------------
+
+
+class TestEndSessionInfersEntityType:
+    """Proposal #51, sub-tranche B2.
+
+    RememberService.end_session() accepts a structured `entities` list
+    written by Claude when summarising a session. Each entry can omit
+    the `type` field, in which case the code at remember.py:1445 was
+    hard-defaulting the missing type to the literal string "person":
+
+        entity_type=entity.get("type", "person"),
+
+    Passing "person" explicitly bypasses the inference branch in
+    remember_entity() (which only fires when entity_type is empty), so
+    organisations like "Markup AI" were silently misclassified as
+    persons. The fix: default to "" instead of "person", which lets
+    remember_entity() route through _infer_entity_type() exactly like
+    the about_entities path already does.
+
+    These tests pin the fix.
+    """
+
+    def _make_episode(self, db):
+        """Create a minimal episode row so end_session() validation passes."""
+        return db.insert(
+            "episodes",
+            {
+                "started_at": datetime.utcnow().isoformat(),
+                "summary": "test episode",
+            },
+        )
+
+    def test_end_session_infers_organization_for_ai_suffix(self, db):
+        """Untyped entity 'Markup AI' must be stored as organization."""
+        svc = _get_remember_service(db)
+        episode_id = self._make_episode(db)
+
+        result = svc.end_session(
+            episode_id=episode_id,
+            narrative="Discussed AIAC sponsorship with Markup AI's CEO.",
+            entities=[{"name": "Markup AI"}],
+        )
+
+        assert result["entities_stored"] == 1
+        markup = _entity_by_name(db, "Markup AI")
+        assert markup is not None, "Markup AI entity should be created"
+        assert markup["type"] == "organization", (
+            f"Markup AI should be inferred as organization, got {markup['type']!r}. "
+            "This is the Proposal #51 B2 regression."
+        )
+
+    def test_end_session_respects_explicit_type(self, db):
+        """When the caller supplies type, inference must NOT override it."""
+        svc = _get_remember_service(db)
+        episode_id = self._make_episode(db)
+
+        result = svc.end_session(
+            episode_id=episode_id,
+            narrative="Met with Matt Blumberg about Q3 plans.",
+            entities=[{"name": "Matt Blumberg", "type": "person"}],
+        )
+
+        assert result["entities_stored"] == 1
+        matt = _entity_by_name(db, "Matt Blumberg")
+        assert matt is not None
+        assert matt["type"] == "person"
+
+    def test_end_session_handles_multiple_untyped_entities(self, db):
+        """Mixed batch: each entity gets its own inferred type."""
+        svc = _get_remember_service(db)
+        episode_id = self._make_episode(db)
+
+        result = svc.end_session(
+            episode_id=episode_id,
+            narrative="Markup AI and Stanford University both expressed interest.",
+            entities=[
+                {"name": "Markup AI"},
+                {"name": "Stanford University"},
+                {"name": "Matt Blumberg"},
+            ],
+        )
+
+        assert result["entities_stored"] == 3
+        assert _entity_by_name(db, "Markup AI")["type"] == "organization"
+        assert _entity_by_name(db, "Stanford University")["type"] == "organization"
+        assert _entity_by_name(db, "Matt Blumberg")["type"] == "person"
