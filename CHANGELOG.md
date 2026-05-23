@@ -8,6 +8,14 @@ All notable changes to Claudia will be documented in this file.
 
 - **Memory daemon: WAL checkpoint no longer blocks concurrent readers** (#66, thanks @tilthnco). `database.py` now uses `PRAGMA wal_checkpoint(PASSIVE)` on every connection instead of `TRUNCATE`. `TRUNCATE` takes an exclusive lock, which deadlocks against concurrent WAL readers like Litestream and causes the MCP server to time out after 30s on startup. `PASSIVE` yields cleanly if a reader holds the WAL lock. Compaction behavior is unchanged; only the locking mode is relaxed. Crash safety is unaffected since WAL mode (not checkpointing) is the durability mechanism.
 
+### Changed
+
+- 27 skill descriptions in `template-v2/.claude/skills/` now end with a "See also: …" pointer to adjacent skills (from #61). Affected clusters: outbound message composition, memory introspection, memory visualization, reflective cadences, meeting lifecycle, risks and blind spots, people and relationships, patterns and judgment, inbound document processing. Skill names, trigger phrases, and behaviors are unchanged; descriptions are extended additively to nudge skill routing toward the canonical pick when a request straddles two skills.
+
+### Documentation
+
+- Expanded `template-v2/.claude/skills/README.md` with four new sections (from #61): "Writing a good skill description", "The see also convention", "Disambiguation notes", and "Proactive vs contextual: when to make a skill auto-fire". Each section grounds itself in existing-catalog exemplars.
+
 ## 1.60.0 (2026-05-15)
 
 ### Three new skills inspired by Karpathy's recent work, adapted to Claudia's principles
