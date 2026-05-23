@@ -2,7 +2,11 @@
 
 All notable changes to Claudia will be documented in this file.
 
-## Unreleased
+## 1.60.1 (2026-05-22)
+
+### Two bug fixes from the fixing-phase pass
+
+Both shipped together as a patch release. No new features; no surface-area change. Upgrade with `npx get-claudia .` from any existing install.
 
 ### Fixed
 
