@@ -14,6 +14,7 @@ All notable changes to Claudia will be documented in this file.
 ### Fixed
 
 - **ASCII greeting logo: row 1 (hair top) realigned over face** (in `template-v2/CLAUDE.md`). The top hair row was indented 6 leading spaces while the face row below it starts at column 0, so the hair appeared shifted ~4 characters to the right. Now sits correctly above the face. Existing installs see the fix on next upgrade.
+- **Installer no longer treats flag-looking arguments as install targets.** Previously, `npx get-claudia --help` (or any unrecognized `--flag`) was interpreted as the install path and would create a `./--help/` directory with templates copied into it. Now: `--help`/`-h` prints a proper usage message and exits, `--version`/`-V` prints the version, and any other leading-dash argument prints `Error: unrecognized argument: <flag>` and exits 1 without touching the filesystem.
 
 ## 1.60.1 (2026-05-22)
 

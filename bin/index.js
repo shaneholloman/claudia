@@ -64,6 +64,30 @@ function getVersion() {
   }
 }
 
+function printUsage(version) {
+  console.log(`get-claudia v${version}
+
+Usage:
+  npx get-claudia [target-dir]   Install or upgrade Claudia (default: ./claudia)
+  npx get-claudia .              Install or upgrade in the current directory
+  npx get-claudia upgrade        Same as \`.\` (in-place upgrade)
+  npx get-claudia google         Set up Google Workspace integration
+
+Flags:
+  --skip-memory                  Skip memory daemon setup
+  --dev                          Dev mode (load daemon from local source)
+  --yes, -y                      Non-interactive (auto-confirm prompts)
+  --help, -h                     Show this help and exit
+  --version, -V                  Print version and exit
+
+After install, from any directory:
+  claudia                        cd to your install folder, launch claude
+  claudia yolo                   Launch claude --dangerously-skip-permissions
+  claudia update                 Upgrade Claudia (no need to cd first)
+  update-claudia                 Alias for \`claudia update\`
+`);
+}
+
 // Simple y/n prompt. Returns true if user confirms (or non-TTY / --yes flag).
 function confirm(question) {
   if (!isTTY || process.argv.includes('--yes') || process.argv.includes('-y')) {
@@ -739,6 +763,16 @@ async function checkForNewerVersion(currentVersion) {
 async function main() {
   const version = getVersion();
 
+  // Handle --help / --version BEFORE banner, update-check, or any I/O.
+  if (process.argv.includes('--help') || process.argv.includes('-h')) {
+    printUsage(version);
+    process.exit(0);
+  }
+  if (process.argv.includes('--version') || process.argv.includes('-V')) {
+    console.log(version);
+    process.exit(0);
+  }
+
   // Self-update trampoline: re-exec with latest if we're stale
   const newerVersion = await checkForNewerVersion(version);
   if (newerVersion) {
@@ -774,6 +808,16 @@ async function main() {
   const devMode = args.includes('--dev');
   const filteredArgs = args.filter(a => a !== '--no-memory' && a !== '--skip-memory' && a !== '--dev' && a !== '--yes' && a !== '-y');
   const arg = filteredArgs[0];
+
+  // Reject flag-looking arguments early so they don't get used as install paths
+  // (e.g. `npx get-claudia --foo` would otherwise create a ./--foo/ directory).
+  // --help and --version are handled at the top of main(); anything else with a
+  // leading dash is a typo or unsupported flag.
+  if (typeof arg === 'string' && arg.startsWith('-')) {
+    console.error(`${colors.red}Error:${colors.reset} unrecognized argument: ${arg}`);
+    console.error(`Run ${colors.cyan}npx get-claudia --help${colors.reset} for usage.`);
+    process.exit(1);
+  }
 
   // ─── Subcommand: get-claudia google ─────────────────────────────────────
   if (arg === 'google') {
